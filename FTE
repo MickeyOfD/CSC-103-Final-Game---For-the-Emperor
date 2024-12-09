@@ -1,0 +1,659 @@
+Player SM;
+
+import processing.sound.*;
+
+SoundFile file;
+
+
+
+//██╗   ██╗     █████╗     ██████╗     ███████╗
+//██║   ██║    ██╔══██╗    ██╔══██╗    ██╔════╝
+//██║   ██║    ███████║    ██████╔╝    ███████╗
+//╚██╗ ██╔╝    ██╔══██║    ██╔══██╗    ╚════██║
+// ╚████╔╝     ██║  ██║    ██║  ██║    ███████║
+//  ╚═══╝      ╚═╝  ╚═╝    ╚═╝  ╚═╝    ╚══════╝
+ArrayList<Projectile> mobs;
+int spawnInterval1 = 45;
+int spawnInterval2 = 37;
+int spawnInterval3 = 29;
+
+
+PImage SMLeft;
+PImage Backgroundlvl1;
+PImage Backgroundlvl2;
+PImage Backgroundlvl3;
+PImage SMDamage;
+PImage Ork;
+PImage Tyr;
+PImage SS;
+Animation SMAnimation;
+PImage[] SMImages = new PImage[4];
+
+boolean Isplaying;
+
+
+
+boolean isAnimatingLeft;
+boolean isAnimatingRight;
+
+boolean isDamage;
+
+int timer = 0;
+
+int score = 0;
+
+int x;
+int y;
+int d;
+
+int health = 100;
+
+boolean isMovingUp;
+boolean isMovingDown;
+boolean isMovingLeft;
+boolean isMovingRight;
+
+//State Machine Vars
+int state = 0;
+
+
+
+
+//███████╗    ███████╗    ████████╗    ██╗   ██╗    ██████╗ 
+//██╔════╝    ██╔════╝    ╚══██╔══╝    ██║   ██║    ██╔══██╗
+//███████╗    █████╗         ██║       ██║   ██║    ██████╔╝
+//╚════██║    ██╔══╝         ██║       ██║   ██║    ██╔═══╝ 
+//███████║    ███████╗       ██║       ╚██████╔╝    ██║     
+//╚══════╝    ╚══════╝       ╚═╝        ╚═════╝     ╚═╝     
+void setup(){                                                        
+size(1000,800);
+background(0);
+
+file = new SoundFile(this, "RBBS.mp3");
+  file.play();
+
+    mobs = new ArrayList<Projectile>();
+    SM = new Player();
+    
+  for (int index=0;index<SMImages.length;index++){
+  SMImages[index] = loadImage("SMFrameLeft"+index+".png");
+  }
+  
+   
+  
+  SMAnimation =  new Animation(SMImages,.1,1);
+  
+  Backgroundlvl1 = loadImage("Bakgroundlvl1.jpeg");
+  Backgroundlvl2 = loadImage("Bakgroundlvl2.jpeg");
+  Backgroundlvl3 = loadImage("Bakgroundlvl3.jpeg");
+  
+  Ork = loadImage ("Ork.png");  
+  
+  Tyr = loadImage ("Tyranid.png");  
+  SS = loadImage ("Sscreen.jpeg");  
+
+  
+  
+  
+}
+
+
+
+
+//██████╗     ██████╗      █████╗     ██╗    ██╗
+//██╔══██╗    ██╔══██╗    ██╔══██╗    ██║    ██║
+//██║  ██║    ██████╔╝    ███████║    ██║ █╗ ██║
+//██║  ██║    ██╔══██╗    ██╔══██║    ██║███╗██║
+//██████╔╝    ██║  ██║    ██║  ██║    ╚███╔███╔╝
+//╚═════╝     ╚═╝  ╚═╝    ╚═╝  ╚═╝     ╚══╝╚══╝                                              
+void draw() {
+  switch(state){
+    case 0:
+    startScreen();
+    
+      
+
+    
+    break;
+    case 1:
+    endScreen();
+    break;
+    
+    case 2:
+  timer = timer + 1;
+  background(0);
+  //scene1();
+  
+  image(Backgroundlvl1, width/2,height/2 );
+  SMDamage = loadImage("SMDamage.png");
+
+
+  if (timer >= spawnInterval1) {
+    mobs.add(new Projectile());
+    score = score + 1;
+    timer = 0;
+    
+    
+  }
+
+  for (Projectile mob : mobs) { 
+    mob.render();
+    mob.move1();
+    mob.hitbox();
+    
+
+    if (isColliding(mob)) {
+      isDamage = true;
+      
+    }
+  }
+
+
+  SM.render();
+  SM.handleMovement();
+  SM.wallDetect();
+  SM.hitbox();
+  
+      SMAnimation.display(x, y);
+
+  
+drawScore();
+
+  if(isDamage == true){
+    image(SMDamage,x,y);  
+    state = 1;
+    
+    
+    
+  }
+  
+  break;
+  
+  case 3:
+  
+    timer = timer + 1;
+  background(0);
+  //scene1();
+  
+  image(Backgroundlvl2, width/2,height/2 );
+  SMDamage = loadImage("SMDamage.png");
+
+
+  if (timer >= spawnInterval2) {
+    mobs.add(new Projectile());
+    score = score + 1;
+    timer = 0;
+    
+    
+  }
+
+  for (Projectile mob : mobs) { 
+    mob.render();
+    mob.move2();
+    mob.hitbox();
+    
+
+    if (isColliding(mob)) {
+      isDamage = true;
+      
+    }
+  }
+
+
+  SM.render();
+  SM.handleMovement();
+  SM.wallDetect();
+  SM.hitbox();
+  
+      SMAnimation.display(x, y);
+
+  
+drawScore();
+
+  if(isDamage == true){
+    image(SMDamage,x,y);  
+    state = 1;
+    
+    
+    
+  }
+  
+  break;
+
+case 4:
+  
+    timer = timer + 1;
+  background(0);
+  //scene1();
+  
+  image(Backgroundlvl3, width/2,height/2 );
+  SMDamage = loadImage("SMDamage.png");
+
+
+  if (timer >= spawnInterval3) {
+    mobs.add(new Projectile());
+    score = score + 1;
+    timer = 0;
+    
+    
+  }
+
+  for (Projectile mob : mobs) { 
+    mob.render2();
+    mob.move3();
+    mob.hitbox();
+    
+
+    if (isColliding(mob)) {
+      isDamage = true;
+      
+    }
+  }
+
+
+  SM.render();
+  SM.handleMovement();
+  SM.wallDetect();
+  SM.hitbox();
+  
+      SMAnimation.display(x, y);
+
+  
+drawScore();
+
+  if(isDamage == true){
+    image(SMDamage,x,y);  
+    state = 1;
+    
+    
+    
+  }
+  
+  break;
+
+  
+  
+  
+    
+  
+
+
+  }
+}
+
+
+  
+
+
+ boolean isColliding(Projectile mob) {
+  return !(SM.pRight < mob.pLeft || // Player's right is left of projectile's left
+           SM.pLeft > mob.pRight || // Player's left is right of projectile's right
+           SM.pBottom < mob.pTop || // Player's bottom is above projectile's top
+           SM.pTop > mob.pBottom);  // Player's top is below projectile's bottom
+}
+
+
+
+//███████╗    ██╗   ██╗    ███╗   ██╗     ██████╗    ████████╗    ██╗     ██████╗     ███╗   ██╗    ███████╗
+//██╔════╝    ██║   ██║    ████╗  ██║    ██╔════╝    ╚══██╔══╝    ██║    ██╔═══██╗    ████╗  ██║    ██╔════╝
+//█████╗      ██║   ██║    ██╔██╗ ██║    ██║            ██║       ██║    ██║   ██║    ██╔██╗ ██║    ███████╗
+//██╔══╝      ██║   ██║    ██║╚██╗██║    ██║            ██║       ██║    ██║   ██║    ██║╚██╗██║    ╚════██║
+//██║         ╚██████╔╝    ██║ ╚████║    ╚██████╗       ██║       ██║    ╚██████╔╝    ██║ ╚████║    ███████║
+//╚═╝          ╚═════╝     ╚═╝  ╚═══╝     ╚═════╝       ╚═╝       ╚═╝     ╚═════╝     ╚═╝  ╚═══╝    ╚══════╝
+ 
+void startScreen(){
+  background(0);
+  image(SS, 0  ,0 ); 
+      fill(255,0,0);
+      textSize(125);
+      text("FOR THE EMPEROR", 0, 300);
+      fill(255);
+      textSize(75);
+      text("press '1' For Level One", 205, 500); 
+      fill(255);
+      textSize(75);
+      text("press '2' For Level Two", 205, 600); 
+      fill(255);
+      textSize(75);
+      text("press '3' For Level Three", 205, 700); 
+}
+
+void endScreen(){
+  fill(255,0,0);
+   textSize(150);
+   text("GAME OVER", 125, height/2); 
+   fill(255);
+      textSize(65);
+      text("Press 'q' to Go to The Main Menu", 60 , 600); 
+}
+
+void keyPressed() {
+  
+  if(key == '1'){
+    state = 2;
+    timer = 0;
+    isDamage = false;
+    mobs.clear();
+    score = 0;
+    
+  }
+  
+  if(key == '2'){
+    state = 3;
+    timer = 0;
+    isDamage = false;
+    mobs.clear();
+    score = 0;
+  }
+  if(key == '3'){
+    state = 4;
+    timer = 0;
+    isDamage = false;
+    mobs.clear();
+    score = 0;
+  }
+  
+  if(key == 'q'){
+    state = 0;
+    timer = 0;
+    isDamage = false;
+    mobs.clear();
+    score = 0;
+    
+    
+    
+    
+  }
+  
+  if (key == 'd' || key == 'D'){
+    isMovingRight = true;
+    SMAnimation.isAnimatingRight = true;
+    SMAnimation.isAnimatingLeft = false;
+  }
+  if (key == 'a' || key == 'A'){
+    isMovingLeft = true;
+    SMAnimation.isAnimatingLeft = true;
+    SMAnimation.isAnimatingRight = false;
+
+
+  }
+}
+
+void keyReleased(){
+  if (key == 'd' || key == 'D'){
+    isMovingRight = false;
+    SMAnimation.isAnimatingRight = false;
+  }
+  if (key == 'a' || key == 'A'){
+    isMovingLeft = false;
+    SMAnimation.isAnimatingLeft = false;
+  }
+}
+
+
+
+
+
+void drawScore(){
+     fill(255,255,255);
+     textSize(75);
+     text(score, 50, height-100); 
+}
+
+
+
+
+
+class Animation {
+  // variables
+  PImage[] images;
+  float speed;
+  float scale;
+
+  float index;
+  boolean isAnimatingLeft;
+  boolean isAnimatingRight;
+
+  // constructor
+  Animation(PImage[] tempImages, float tempSpeed, float tempScale) {
+    images = tempImages;
+    speed = tempSpeed;
+    scale = tempScale;
+
+    index = 0;
+    isAnimatingLeft = false;
+    isAnimatingRight = false;
+    
+    for (int i = 0; i<tempImages.length; i++){
+      images[i].resize(int(images[i].width*scale),
+                       int(images[i].height*scale));
+    }
+  }
+
+  // updates the index which image to display for
+  // the animation
+  void next() { 
+    index += speed;
+
+    // resets the index if it is too big
+    if (index >= images.length) {
+      index=0;
+      isAnimatingLeft=false;
+      isAnimatingRight = false;
+    }
+  }
+
+  // display an image of the animation
+  void display(int x, int y) {
+    imageMode(CENTER);
+    if (isAnimatingLeft) {
+      int imageIndex = int(index);
+      PImage img = images[imageIndex];
+      image(img, x, y);
+
+      // increment the index of the images to display
+      next();
+    } else {
+      PImage img = images[0];
+      image(img, x, y);
+    }
+    if (isAnimatingRight) {
+      int imageIndex = int(index);
+      PImage img = images[imageIndex];
+      image(img, x, y);
+
+      // increment the index of the images to display
+      next();
+   
+    }
+  }
+  
+ 
+}
+
+
+class Player{
+int health;
+
+
+
+int playerSpeed = 4;
+
+
+color SMColor = color(0,0,175);
+
+
+  float pTop;
+  float pBottom;
+  float pRight;
+  float pLeft;
+  
+  
+Player(){
+    x = width/2;
+    y = height - 50 ;
+    d = 50;
+    SMColor = color(0,0,175);
+    
+  }
+ 
+  void render() {
+    
+  fill(SMColor);
+  circle(x, y, d);
+}
+
+void handleMovement(){
+
+  if (isMovingLeft == true){
+    x -= playerSpeed;
+  }
+  if (isMovingRight == true){
+    x += playerSpeed;
+  }
+}
+
+void wallDetect(){
+
+    // detects wall detection for the right wall
+    if (x+d/2 >= width) {
+      x = width-25;
+    }
+    // wall detection for left wall
+    if (x-d/2 <= 0) {
+      x=25;
+    }
+
+    }
+
+void hitbox(){
+  pTop = y - d/2;
+  pBottom = y + d/2;
+  pRight = x + d/2;
+  pLeft = x - d/2;
+  
+}
+    
+  }
+
+class Projectile{
+  
+
+  float x;
+float y = -30;
+float d = 50;
+
+float ySpeed1 = -5;
+
+float ySpeed2 = -10;
+
+float ySpeed3 = -15;
+
+float xSpeed = 5;
+
+float xSpeed2 = 10;
+
+color mobColor = color(255,0,0);
+
+float pTop;
+  float pBottom;
+  float pRight;
+  float pLeft;
+  
+  
+  
+Projectile(){
+    x = random(width);
+    y = -30;
+    d = 25;
+    image(SMDamage,x,y);  
+    ySpeed1 = -5;
+  }
+
+
+
+
+
+
+  /*
+This function takes updates the position the ball according to its speed.
+   */
+  void move1() {
+    y -= ySpeed1;
+    // Reset to the bottom if it goes past the top
+    if (y > 1030) {
+      y = -30;
+      
+    }
+  }
+  
+  void move2() {
+    y -= ySpeed2;
+    x += xSpeed;
+    // Reset to the bottom if it goes past the top
+    if (y > 830) {
+      y = -30;
+      
+    }
+    if (x > 1000) {
+      
+      xSpeed = xSpeed * -1;
+    }
+    if (x < 0) {
+      
+      xSpeed = xSpeed * -1;
+    }
+  }
+  
+   void move3() {
+    y -= ySpeed3;
+    x += xSpeed2;
+    // Reset to the bottom if it goes past the top
+    if (y > 830) {
+      y = -30;
+      
+    }
+    if (x > 1000) {
+      x = 0;
+      xSpeed = -xSpeed;
+    }
+    if (x < -30) {
+      x = 1000;
+      xSpeed = -xSpeed;
+    }
+  }
+  
+  
+  void render() {
+     
+    circle(x, y, d);
+    image(Ork,x,y); 
+}
+
+ void render2() {
+     stroke(0);
+     fill(0);
+    circle(x, y, d);
+    image(Tyr,x+3,y-3); 
+}
+
+void hitbox(){
+  pTop = y - d/2;
+  pBottom = y + d/2;
+  pRight = x + d/2;
+  pLeft = x - d/2;
+}
+
+void touching(Projectile Player) {  
+  if ((x <= Player.x && x >= Player.x && y < Player.y && y >= Player.y) ) {
+      
+       isDamage = true;
+       
+     
+         
+    
+}
+}
+}
+
+  
